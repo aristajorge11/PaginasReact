@@ -1,0 +1,9 @@
+{
+  "links": [
+    { "label": "Inicio", "href": "/" },
+    { "label": "Tienda", "href": "/tienda" },
+    { "label": "Nosotros", "href": "/nosotros" },
+    { "label": "Beneficios", "href": "/beneficios" }
+  ]
+}
+  

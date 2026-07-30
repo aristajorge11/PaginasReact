@@ -1,0 +1,66 @@
+{
+  "links": [
+    { "label": "Inicio", "href": "/" },
+    { "label": "Tienda", "href": "/tienda" },
+    { "label": "Nosotros", "href": "/nosotros" },
+    { "label": "Contacto", "href": "/contacto" },
+    { "label": "Beneficios", "href": "/beneficios" }
+  ],
+  "megaMenus": {
+    "Inicio": [
+      {
+        "section": "Categorías",
+        "items": ["Polos", "Shorts", "Joggers", "Pantalón"]
+      },
+      {
+        "section": "Productos más vendidos",
+        "items": ["Ver colección"]
+      }
+    ],
+    "Tienda": [
+      {
+        "section": "Polos",
+        "items": ["Luxury", "Supremo", "Prime", "Caffarena", "Set Vittoria", "Set Signorile", "Bottoncini"]
+      },
+      {
+        "section": "Shorts",
+        "items": ["Set Vittoria"]
+      },
+      {
+        "section": "Joggers",
+        "items": ["Set Signorile"]
+      },
+      {
+        "section": "Pantalón",
+        "items": ["Clásico", "Sastre"]
+      }
+    ],
+    "Nosotros": [
+      {
+        "section": "Conócenos",
+        "items": ["Nosotros", "Historia", "Misión", "Visión", "Conoce al Fundador"]
+      }
+    ],
+    "Contacto": [
+      {
+        "section": "Soporte",
+        "items": ["FAQ", "Asistencia"]
+      },
+      {
+        "section": "Información de contacto",
+        "items": ["Email: info@uomocattivo.com", "Teléfono: +51 XXX XXXX"]
+      },
+      {
+        "section": "Oportunidades",
+        "items": ["Emprende con nosotros"]
+      }
+    ],
+    "Beneficios": [
+      {
+        "section": "Lo que ganas",
+        "items": ["Planes", "Beneficios","Marcas","Como ser MAYORISTA","Preguntas Frecuentes"]
+      }
+    ]
+  },
+  "megaMenuTriggers": ["Inicio", "Tienda", "Nosotros", "Contacto", "Beneficios"]
+}

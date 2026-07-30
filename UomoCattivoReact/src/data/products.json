@@ -1,0 +1,712 @@
+[
+  {
+    "id": 1,
+    "slug": "polo-luxury-verde",
+    "name": "Polo Luxury Verde",
+    "price": 189,
+    "previousPrice": 229,
+    "category": "Polos",
+    "subcategory": "Luxury",
+    "description": "Polo premium confeccionado con algodón de alta calidad, de corte moderno y acabado elegante para un estilo sofisticado.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-LUXURY-VERDE-SIN-NOMBRE-PARA-MAXIMO-600x750.png.webp",
+    "mini-image": ["https://uomocattivo.com/wp-content/uploads/2026/07/POLO-LUXURY-VERDE-SIN-NOMBRE-PARA-MAXIMO-600x750.png.webp","https://uomocattivo.com/wp-content/uploads/2026/07/POLO-LUXURY-VERDE-FRONT-600x750.png.webp","https://uomocattivo.com/wp-content/uploads/2026/05/MEDIDADAS-POLO-LUXURY-2-600x750.jpg.webp"],
+    "colors": ["Verde"],
+    "sizes": ["S","M","L","XL"],
+    "featured": true,
+    "relatedIds": [2,3,4 ],    
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "polo-prime-melange",
+    "name": "Polo Prime Melange",
+    "price": 98,
+    "previousPrice": 129,
+    "category": "Polos",
+    "subcategory": "Prime",
+    "description": "Polo de diseño minimalista elaborado con tela suave y resistente, ideal para un look casual premium.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-PRIME-MELANGE-2-600x901.png.webp",
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-PRIME-MELANGE-2-600x901.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-PRIME-REDONDO-MELANGE-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/MEDIDAS-POLO-PRIME-NUEVO-600x750.jpg.webp"
+    ],
+    "colors": [
+      "Melange"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      1,
+      3,
+      4
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "pantalon-sastre-negro",
+    "name": "Pantalón Sastre Negro",
+    "price": 124,
+    "previousPrice": 159,
+    "category": "Pantalón",
+    "subcategory": "Sastre",
+    "description": "Pantalón de corte sastre con acabado elegante y excelente caída, perfecto para ocasiones formales o un estilo ejecutivo.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/05/PANTALON-SASTRE-NEGRO-3-600x900.jpg.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "28",
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "featured": false,
+    "relatedIds": [
+      1,
+      2,
+      4
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/05/PANTALON-SASTRE-NEGRO-3-600x900.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/PANTALON-SASTRE-NEGRO-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/MEDIDAS-PATALON-SASTRE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 4,
+    "slug": "polo-supremo-perla",
+    "name": "Polo Supremo Perla",
+    "price": 168,
+    "previousPrice": 199,
+    "category": "Polos",
+    "subcategory": "Supremo",
+    "description": "Polo de la línea Supremo con acabado premium, textura suave y un diseño pensado para destacar en cualquier ocasión.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-SUPREMO-PERLA-17-600x900.png.webp",
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-SUPREMO-PERLA-17-600x900.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/PERLA-FRONT-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/MEDIDAS-POLO-SUPREMO-600x750.png.webp"
+    ],
+    "colors": [
+      "Perla"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      1,
+      2,
+      3
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ]
+  },
+  {
+    "id": 5,
+    "slug": "polo-luxury-negro",
+    "name": "Polo Luxury Negro",
+    "price": 89,
+    "previousPrice": 109,
+    "category": "Polos",
+    "subcategory": "Luxury",
+    "description": "Polo premium confeccionado en algodón de alta calidad con acabado suave.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/05/POLO-LUXURY-NEGRO-3-600x900.jpg.webp",
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/05/POLO-LUXURY-NEGRO-3-600x900.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/POLO-LUXURY-NEGRO-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/MEDIDADAS-POLO-LUXURY-2-600x750.jpg.webp"
+    ],
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      6,
+      7,
+      8
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ]
+  },
+  {
+    "id": 6,
+    "slug": "polo-supremo-gargola",
+    "name": "Polo Supremo Gargola",
+    "price": 79,
+    "previousPrice": 99,
+    "category": "Polos",
+    "subcategory": "Supremo",
+    "description": "Diseño minimalista ideal para cualquier ocasión.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-SUPREMO-GARGOLA-7-600x900.png.webp",
+    "colors": [
+      "Gargola"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": false,
+    "relatedIds": [
+      5,
+      7,
+      8
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-SUPREMO-GARGOLA-7-600x900.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/GARGOLA-FRONT-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/MEDIDAS-POLO-SUPREMO-600x750.png.webp"
+    ]
+  },
+  {
+    "id": 7,
+    "slug": "polo-prime-arena",
+    "name": "Polo Prime Arena",
+    "price": 95,
+    "previousPrice": 115,
+    "category": "Polos",
+    "subcategory": "Prime",
+    "description": "Polo de corte moderno con excelente caída.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/01/polo-arena-prime-hombre-3-600x771.jpeg.webp",
+    "colors": [
+      "Arena"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      5,
+      6,
+      8
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/01/polo-arena-prime-hombre-3-600x771.jpeg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/01/polo-arena-prime-hombre-1-600x750.jpeg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/MEDIDAS-POLO-PRIME-NUEVO-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 8,
+    "slug": "polo-caffarena-negro",
+    "name": "Polo Caffarena Negro",
+    "price": 105,
+    "previousPrice": 129,
+    "category": "Polos",
+    "subcategory": "Caffarena",
+    "description": "Prenda elegante para temporadas de clima fresco.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/07/CAFFARENA-VITTORIO-NEGRO-13-600x900.jpg.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      5,
+      6,
+      7
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/07/CAFFARENA-VITTORIO-NEGRO-13-600x900.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/MOCKUPS-VITTORIO-NEGRO-FRONT-600x750.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/MEDIDAS-VITTORIO.jpg-600x750.jpeg.webp"
+    ]
+  },
+  {
+    "id": 9,
+    "slug": "polo-negro-over-set-vittoria",
+    "name": "Polo Negro Over Set Vittoria",
+    "price": 110,
+    "previousPrice": 130,
+    "category": "Polos",
+    "subcategory": "Set Vittoria",
+    "description": "Diseño exclusivo con detalles premium.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2025/12/polo-negro-over-set-vittoria-3-scaled-600x750.png.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": false,
+    "relatedIds": [
+      5,
+      6,
+      10
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2025/12/polo-negro-over-set-vittoria-3-scaled-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/polo-negro-over-set-vittoria-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/NUEVA-MEDIDA-POLO-SIGNORILE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 10,
+    "slug": "polo-perla-set-classic-signorile",
+    "name": "Polo Perla Set Classic Signorile",
+    "price": 119,
+    "previousPrice": 139,
+    "category": "Polos",
+    "subcategory": "Set Signorile",
+    "description": "Colección premium inspirada en la moda italiana.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2025/12/polo-perla-set-classic-signorile-1-scaled-600x750.jpg.webp",
+    "colors": [
+      "Perla"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      8,
+      9,
+      11
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2025/12/polo-perla-set-classic-signorile-1-scaled-600x750.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/polo-perla-set-classic-signorile-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/NUEVA-MEDIDA-POLO-SIGNORILE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 11,
+    "slug": "polo-acero-bottoncini",
+    "name": "Polo Acero Bottoncini",
+    "price": 99,
+    "previousPrice": 119,
+    "category": "Polos",
+    "subcategory": "Bottoncini",
+    "description": "Acabado elegante con botones decorativos.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/02/polo_acero_bottoncini_hombre-2-600x750.jpg.webp",
+    "colors": [
+      "Acero"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": false,
+    "relatedIds": [
+      8,
+      9,
+      10
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/02/polo_acero_bottoncini_hombre-2-600x750.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/02/polo_acero_bottoncini_hombre-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/02/guia-de-talla-polo-bottoncini-600x750.png.webp"
+    ]
+  },
+  {
+    "id": 12,
+    "slug": "short-negro-set-vittoria",
+    "name": "Short Negro Set Vittoria",
+    "price": 75,
+    "previousPrice": 90,
+    "category": "Shorts",
+    "subcategory": "Set Vittoria",
+    "description": "Short ligero para uso diario.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2025/12/short-negro-set-vitorria-1-scaled-600x750.png.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      13,
+      14,
+      15
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2025/12/short-negro-set-vitorria-1-scaled-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/short-negro-set-vitorria-3-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/guia-de-tallas-short-set-vittoria-600x750.png.webp"
+    ]
+  },
+  {
+    "id": 13,
+    "slug": "short-beige-set-vittoria",
+    "name": "Short Beige Set Vittoria",
+    "price": 78,
+    "previousPrice": 95,
+    "category": "Shorts",
+    "subcategory": "Set Vittoria",
+    "description": "Comodidad y frescura para el verano.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2025/12/short-beige-set-vitorria-1-scaled-600x750.png.webp",
+    "colors": [
+      "Beige"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": false,
+    "relatedIds": [
+      12,
+      14,
+      15
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2025/12/short-beige-set-vitorria-1-scaled-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/short-beige-set-vitorria-3-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/guia-de-tallas-short-set-vittoria-600x750.png.webp"
+    ]
+  },
+  {
+    "id": 14,
+    "slug": "jogger-negro-set-signorile",
+    "name": "Jogger Negro Set Signorile",
+    "price": 129,
+    "previousPrice": 149,
+    "category": "Joggers",
+    "subcategory": "Set Signorile",
+    "description": "Jogger moderno con acabado premium.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-negro-set-signorile-hombre-3-scaled-600x750.png.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      15,
+      16,
+      17
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-negro-set-signorile-hombre-3-scaled-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-negro-set-signorile-hombre-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/NUEVA-MEDIDA-JOGGER-SIGNORILE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 15,
+    "slug": "jogger-plomo-set-signorile",
+    "name": "Jogger Plomo Set Signorile",
+    "price": 125,
+    "previousPrice": 145,
+    "category": "Joggers",
+    "subcategory": "Set Signorile",
+    "description": "Ideal para un look casual premium.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-plomo-set-signorile-hombre-3-scaled-600x750.png.webp",
+    "colors": [
+      "Plomo"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": false,
+    "relatedIds": [
+      14,
+      16,
+      17
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-plomo-set-signorile-hombre-3-scaled-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-plomo-set-signorile-hombre-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/NUEVA-MEDIDA-JOGGER-SIGNORILE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 16,
+    "slug": "pantalon-clasico-negro",
+    "name": "Pantalón Clásico Negro",
+    "price": 135,
+    "previousPrice": 159,
+    "category": "Pantalón",
+    "subcategory": "Clásico",
+    "description": "Corte clásico con excelente ajuste.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/06/Pantalon-Clasico-Negro-2-600x1067.png.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "28",
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "featured": true,
+    "relatedIds": [
+      17,
+      18,
+      19
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/06/Pantalon-Clasico-Negro-2-600x1067.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/06/PANTALON-CLASICO-NEGRO-MOCKUP-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/06/MEDIDAS-PATALON-CLASICO-600x750.png.webp"
+    ]
+  },
+  {
+    "id": 17,
+    "slug": "pantalon-clasico-plomo-rata",
+    "name": "Pantalón Clásico Plomo Rata",
+    "price": 132,
+    "previousPrice": 155,
+    "category": "Pantalón",
+    "subcategory": "Clásico",
+    "description": "Versátil para cualquier ocasión.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/06/PANTALON-CLASICO-PLOMO-RATA-600x750.jpg.webp",
+    "colors": [
+      "Plomo Rata"
+    ],
+    "sizes": [
+      "28",
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "featured": false,
+    "relatedIds": [
+      16,
+      18,
+      19
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/06/PANTALON-CLASICO-PLOMO-RATA-600x750.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/06/PANTALON-CLASICO-PLOMO-RATA-FRONT.jpg-600x750.jpeg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/06/MEDIDAS-PATALON-CLASICO-600x750.png.webp"
+    ]
+  },
+  {
+    "id": 18,
+    "slug": "pantalon-sastre-negro",
+    "name": "Pantalón Sastre Negro",
+    "price": 149,
+    "previousPrice": 175,
+    "category": "Pantalón",
+    "subcategory": "Sastre",
+    "description": "Elegancia y comodidad para ocasiones formales.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/05/PANTALON-SASTRE-NEGRO-3-600x900.jpg.webp",
+    "colors": [
+      "Negro"
+    ],
+    "sizes": [
+      "28",
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "featured": true,
+    "relatedIds": [
+      16,
+      17,
+      19
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/05/PANTALON-SASTRE-NEGRO-3-600x900.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/PANTALON-SASTRE-NEGRO-1-600x750.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/MEDIDAS-PATALON-SASTRE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 19,
+    "slug": "pantalon-sastre-azul",
+    "name": "Pantalón Sastre Azul",
+    "price": 145,
+    "previousPrice": 170,
+    "category": "Pantalón",
+    "subcategory": "Sastre",
+    "description": "Diseño refinado para un estilo ejecutivo.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/07/PANTALON-SASTRE-AZUL-2-1.jpg-600x901.jpeg.webp",
+    "colors": [
+      "Azul"
+    ],
+    "sizes": [
+      "28",
+      "30",
+      "32",
+      "34",
+      "36"
+    ],
+    "featured": false,
+    "relatedIds": [
+      16,
+      17,
+      18
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/07/PANTALON-SASTRE-AZUL-2-1.jpg-600x901.jpeg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/07/azul-front-600x750.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/MEDIDAS-PATALON-SASTRE-600x750.jpg.webp"
+    ]
+  },
+  {
+    "id": 20,
+    "slug": "polo-luxury-grey",
+    "name": "POLO LUXURY GREY",
+    "price": 92,
+    "previousPrice": 115,
+    "category": "Polos",
+    "subcategory": "Luxury",
+    "description": "Polo elegante con acabado premium.",
+    "image": "https://uomocattivo.com/wp-content/uploads/2026/05/POLO-LUXURY-GREY-3-600x900.jpg.webp",
+    "colors": [
+      "Grey"
+    ],
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "relatedIds": [
+      5,
+      6,
+      7
+    ],
+    "extras": [
+      "✓ Envío seguro",
+      "✓ Pago protegido",
+      "✓ Envío gratis desde S/300"
+    ],
+    "mini-image": [
+      "https://uomocattivo.com/wp-content/uploads/2026/05/POLO-LUXURY-GREY-3-600x900.jpg.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/POLO-LUXURY-GREY-1-160x160.png.webp",
+      "https://uomocattivo.com/wp-content/uploads/2026/05/MEDIDADAS-POLO-LUXURY-2-600x750.jpg.webp"
+    ]
+  }
+]

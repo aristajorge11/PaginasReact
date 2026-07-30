@@ -1,0 +1,22 @@
+[
+  {
+    "img": "https://uomocattivo.com/wp-content/uploads/2026/07/POLO-LUXURY-VERDE-SIN-NOMBRE-PARA-MAXIMO-600x750.png.webp",
+    "name": "Polos",
+    "description": "Estilo sobrio y moderno"
+  },
+  {
+    "img": "https://uomocattivo.com/wp-content/uploads/2025/12/short-negro-set-vitorria-1-scaled-600x750.png.webp",
+    "name": "Shorts",
+    "description": "Versión casual con presencia"
+  },
+  {
+    "img": "https://uomocattivo.com/wp-content/uploads/2025/12/jogger-negro-set-signorile-hombre-3-scaled-600x750.png.webp",
+    "name": "Joggers",
+    "description": "Comodidad con corte preciso"
+  },
+  {
+    "img": "https://uomocattivo.com/wp-content/uploads/2026/06/Pantalon-Clasico-Negro-2-600x1067.png.webp",
+    "name": "Pantalón",
+    "description": "Elegancia para cada ocasión"
+  }
+]
