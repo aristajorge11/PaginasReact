@@ -1,16 +1,21 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart, Minus, Plus, RotateCcw, Shield, ShoppingBag, Truck } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { ProductHoverImage } from '../components/ProductHoverImage';
+import { PermissionGate } from '../components/PermissionGate';
 import { useWishlist } from '../context/WishlistContext';
-import { getProductBySlug, getRelatedProducts } from '../services/contentService';
+import { resolveProductPrice } from '../services/pricingService';
+import PriceDisplay from '../components/PriceDisplay';
+import { getProductBySlug, getProducts, getRelatedProducts } from '../services/contentService';
 import type { Product } from '../types';
+import { PERMISSIONS } from '../utils/permissionCodes';
 
 const allSizeOptions = ['S', 'M', 'L', 'XL', '28', '30', '32', '34', '36'];
 
 export const ProductPage = () => {
   const { slug } = useParams();
+  const location = useLocation();
   const { favorites, toggleFavorite, addToCart } = useWishlist();
 
   const [quantity, setQuantity] = useState(1);
@@ -21,7 +26,26 @@ export const ProductPage = () => {
   const [quickBuySize, setQuickBuySize] = useState("M");
   const [quickBuyQuantity, setQuickBuyQuantity] = useState(1);
 
-  const product = slug ? getProductBySlug(slug) : undefined;
+  const product = useMemo(() => {
+    if (!slug) {
+      return undefined;
+    }
+
+    const bySlug = getProductBySlug(slug);
+
+    if (bySlug) {
+      return bySlug;
+    }
+
+    const match = slug.match(/-(\d+)$/);
+
+    if (!match) {
+      return undefined;
+    }
+
+    const productId = Number(match[1]);
+    return getProducts().find((item) => item.id === productId);
+  }, [slug]);
 
   const [uploadedImages, setUploadedImages] = useState<(string | null)[]>([]);
 
@@ -57,7 +81,7 @@ export const ProductPage = () => {
     setSelectedImageIndex(0);
     setSelectedSize(product.sizes[0] ?? "M");
     setQuantity(1);
-  }, [product?.id]);
+  }, [product?.id, location.pathname]);
   useEffect(() => {
     if (uploadedImages.length <= 1) return;
 
@@ -67,7 +91,7 @@ export const ProductPage = () => {
 
     const interval = setInterval(() => {
       setSelectedImageIndex((current) => (current + 1) % validImages.length);
-    }, 3000); // cambia cada 3 segundos
+    }, 3000); 
 
     return () => clearInterval(interval);
   }, [uploadedImages]);
@@ -82,6 +106,13 @@ export const ProductPage = () => {
 
   const relatedProducts = getRelatedProducts(product.id);
   const isFavorite = favorites.includes(product.id);
+
+  const resultadoPrecio = useMemo(() => resolveProductPrice(product, { cantidad: quantity }), [product, quantity]);
+
+  const precioOriginal = resultadoPrecio.precioOriginal;
+  const precioFinal = resultadoPrecio.precioFinal;
+  const hayDescuento = resultadoPrecio.descuentoAplicado > 0 && precioFinal < precioOriginal;
+  const etiquetaDescuento = resultadoPrecio.etiquetaDescuento;
 
   const openQuickBuy = (item: Product) => {
     setQuickBuyProduct(item);
@@ -167,13 +198,20 @@ export const ProductPage = () => {
           <p className="text-[11px] uppercase tracking-[0.3em] text-black/55">{product.category}</p>
           <h2 className="mt-2 text-[13px] uppercase tracking-[0.2em] text-black/45">{product.subcategory}</h2>
 
-          <div className="mt-6 flex items-end gap-3">
-            {product.previousPrice ? (
-              <span className="pb-1 text-sm text-black/40 line-through sm:text-base">S/{product.previousPrice}</span>
-            ) : null}
-            <span className="text-4xl font-semibold leading-none text-red-600 sm:text-[2.7rem]">S/{product.price}</span>
+          <div className="mt-6 flex flex-col gap-2">
+            <div className="flex items-end gap-3">
+              <PriceDisplay product={product} cantidad={quantity} />
+              {hayDescuento && etiquetaDescuento ? (
+                <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-red-600">
+                  {etiquetaDescuento}
+                </span>
+              ) : !hayDescuento && product.previousPrice ? (
+                <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-red-600">
+                  Oferta
+                </span>
+              ) : null}
+            </div>
           </div>
-
           <div className="mt-7 space-y-6">
             <div>
               <label className="text-xs font-semibold uppercase tracking-[0.26em] text-black/70">Talla</label>
@@ -242,30 +280,33 @@ export const ProductPage = () => {
           </div>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <motion.button
-              type="button"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => addToCart(product.id, selectedSize, quantity)}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black bg-black px-5 py-3.5 text-sm font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:border-red-600 hover:bg-red-600"
-            >
-              <ShoppingBag size={16} /> Agregar al carrito
-            </motion.button>
-            <motion.button
-              type="button"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => toggleFavorite(product.id)}
-              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl border px-5 py-3.5 text-sm font-semibold uppercase tracking-[0.13em] transition-colors ${isFavorite ? 'border-red-600 bg-red-600 text-white' : 'border-black/20 bg-white text-black hover:border-red-600 hover:text-red-600'}`}
-            >
-              <Heart size={16} /> Favoritos
-            </motion.button>
+            <PermissionGate permission={PERMISSIONS.salesCreate}>
+              <motion.button
+                type="button"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => addToCart(product.id, selectedSize, quantity)}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-black bg-black px-5 py-3.5 text-sm font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:border-red-600 hover:bg-red-600"
+              >
+                <ShoppingBag size={16} /> Agregar al carrito
+              </motion.button>
+            </PermissionGate>
+            <PermissionGate permission={PERMISSIONS.productUpdate}>
+              <motion.button
+                type="button"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={() => toggleFavorite(product.id)}
+                className={`inline-flex w-full items-center justify-center gap-2 rounded-xl border px-5 py-3.5 text-sm font-semibold uppercase tracking-[0.13em] transition-colors ${isFavorite ? 'border-red-600 bg-red-600 text-white' : 'border-black/20 bg-white text-black hover:border-red-600 hover:text-red-600'}`}
+              >
+                <Heart size={16} /> Favoritos
+              </motion.button>
+            </PermissionGate>
           </div>
 
           <div className="mt-8 rounded-[1.4rem] border border-black/10 bg-white p-5">
             <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-black">Detalle</h3>
             <p className="mt-3 text-sm leading-relaxed text-black/70">{product.description}</p>
-            <p className="mt-3 text-sm text-black/70">Colores: {product.colors.join(', ')}</p>
           </div>
 
           <div className="mt-7 grid gap-2.5 sm:grid-cols-3">
@@ -315,19 +356,21 @@ export const ProductPage = () => {
                     />
                   </Link>
 
-                  <div className="absolute right-3 top-3">
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        toggleFavorite(item.id);
-                      }}
-                      className={`rounded-full border p-2.5 transition-colors ${isRelatedFavorite ? 'border-red-600 bg-red-600 text-white' : 'border-black/15 bg-white text-black hover:border-red-600 hover:text-red-600'}`}
-                    >
-                      <Heart size={16} />
-                    </button>
-                  </div>
+                  <PermissionGate permission={PERMISSIONS.productUpdate}>
+                    <div className="absolute right-3 top-3">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          toggleFavorite(item.id);
+                        }}
+                        className={`rounded-full border p-2.5 transition-colors ${isRelatedFavorite ? 'border-red-600 bg-red-600 text-white' : 'border-black/15 bg-white text-black hover:border-red-600 hover:text-red-600'}`}
+                      >
+                        <Heart size={16} />
+                      </button>
+                    </div>
+                  </PermissionGate>
                 </div>
 
                 <div className="mt-4">
@@ -336,19 +379,21 @@ export const ProductPage = () => {
 
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <p className="text-lg font-semibold text-red-600">S/{item.price}</p>
-                    <motion.button
-                      type="button"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        openQuickBuy(item);
-                      }}
-                      className="inline-flex items-center justify-center rounded-xl border border-black bg-black p-3 text-white transition-colors hover:border-red-600 hover:bg-red-600"
-                    >
-                      <ShoppingBag size={16} />
-                    </motion.button>
+                    <PermissionGate permission={PERMISSIONS.salesCreate}>
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          openQuickBuy(item);
+                        }}
+                        className="inline-flex items-center justify-center rounded-xl border border-black bg-black p-3 text-white transition-colors hover:border-red-600 hover:bg-red-600"
+                      >
+                        <ShoppingBag size={16} />
+                      </motion.button>
+                    </PermissionGate>
                   </div>
                 </div>
               </motion.article>
@@ -394,7 +439,7 @@ export const ProductPage = () => {
                 <div className="space-y-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.22em] text-black/55">Precio</p>
-                    <p className="mt-2 text-3xl font-semibold text-red-600 sm:text-[2.1rem]">S/{quickBuyProduct.price}</p>
+                    <p className="mt-2 text-3xl font-semibold text-red-600 sm:text-[2.1rem]">S/{resolveProductPrice(quickBuyProduct, { cantidad: quickBuyQuantity }).precioFinal.toFixed(2)}</p>
                   </div>
 
                   <div>
@@ -445,13 +490,15 @@ export const ProductPage = () => {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleQuickBuyConfirm}
-                    className="mt-3 w-full rounded-xl border border-black bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-red-600 hover:bg-red-600"
-                  >
-                    Agregar al carrito
-                  </button>
+                  <PermissionGate permission={PERMISSIONS.salesCreate}>
+                    <button
+                      type="button"
+                      onClick={handleQuickBuyConfirm}
+                      className="mt-3 w-full rounded-xl border border-black bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-red-600 hover:bg-red-600"
+                    >
+                      Agregar al carrito
+                    </button>
+                  </PermissionGate>
                 </div>
               </div>
             </motion.div>

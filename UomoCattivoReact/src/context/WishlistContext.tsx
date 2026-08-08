@@ -1,4 +1,6 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useEffect, useContext, useMemo, useState, type ReactNode } from 'react';
+import { useAuth } from './AuthContext';
+import { StorageKeys, storageManager } from '../storage';
 
 type CartItem = {
   productId: number;
@@ -24,9 +26,54 @@ type WishlistContextType = {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export const WishlistProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+
+  const wishlistKey = useMemo(
+    () => (user?.id ? `${StorageKeys.WISHLIST}.${user.id}` : StorageKeys.WISHLIST),
+    [user?.id],
+  );
+
+  const cartKey = useMemo(
+    () => (user?.id ? `${StorageKeys.CART}.${user.id}` : StorageKeys.CART),
+    [user?.id],
+  );
+
   const [favorites, setFavorites] = useState<number[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadedFavorites = storageManager.get<number[]>(wishlistKey) || [];
+    setFavorites(loadedFavorites);
+
+    try {
+      const loadedCart = (storageManager.get<CartItem[]>(cartKey) as CartItem[]) || [];
+      setCart(loadedCart);
+    } catch {
+      setCart([]);
+    }
+
+    setIsLoaded(true);
+  }, [wishlistKey, cartKey]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    try {
+      storageManager.set(wishlistKey, favorites);
+    } catch {
+    }
+  }, [favorites, wishlistKey, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    try {
+      storageManager.set(cartKey, cart);
+    } catch {
+    }
+  }, [cart, cartKey, isLoaded]);
 
   const toggleFavorite = (productId: number) => {
     setFavorites((current) =>

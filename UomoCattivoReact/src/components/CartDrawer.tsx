@@ -6,13 +6,22 @@ import { Link } from 'react-router-dom';
 import { ImagePlaceholder } from './ImagePlaceholder';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
+import useCart from '../hooks/useCart';
 import type { Product } from '../types';
 import type { PurchaseItem } from '../types/auth';
 import { getPlanById, type SubscriptionPlan } from '../plans';
 import { getProducts } from '../services/contentService';
-import { promoCodes, type PromoCode } from '../data/promoCodes';
+import { resolveProductPrice, resolveCartCoupon, usePricingRules } from '../services/pricingService';
+import PriceDisplay from '../components/PriceDisplay';
+import { obtenerPromoCodes } from '../data/promoCodes';
+import { storageManager, StorageKeys } from '../storage';
+import CartCheckout from './CartCheckout';
+import CartItemsList from './CartItemsList';
+import CartSummary from './CartSummary';
 import { MembershipModal } from './MembershipModal';
 import { ProductHoverImage } from '../components/ProductHoverImage';
+import { PermissionGate } from './PermissionGate';
+import { PERMISSIONS } from '../utils/permissionCodes';
 
 type CartProduct = Product & { quantity: number; size: string };
 
@@ -347,23 +356,23 @@ export const CartDrawer = () => {
                     ) : null}
 
                     {appliedPromo ? (
-                      <div className="mt-4 rounded-[1rem] border border-red-600 bg-white/10 p-3 text-sm text-white">
+                      <div className="mt-4 rounded-[1rem] border border-red-500/70 bg-gradient-to-r from-red-600/20 to-red-500/10 p-3 text-sm text-white shadow-sm">
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <p className="font-semibold">Cupón aplicado</p>
-                            <p className="text-white/70">
+                            <p className="font-semibold text-red-200">Cupón aplicado</p>
+                            <p className="mt-1 text-white/90">
                               {appliedPromo.code}{' '}
                               {appliedPromo.type === 'percentage'
-                                ? `(-${appliedPromo.value}%)`
+                                ? `(-${appliedPromo.value}% • ahorro de S/${promoDiscountAmount.toFixed(2)})`
                                 : appliedPromo.type === 'fixed'
-                                ? `(-S/${appliedPromo.value})`
+                                ? `(-S/${appliedPromo.value} de descuento)`
                                 : '(Envío gratis)'}
                             </p>
                           </div>
                           <button
                             type="button"
                             onClick={removeAppliedPromo}
-                            className="rounded-full border border-white/10 bg-black/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-600 hover:text-white"
+                            className="rounded-full border border-red-400/40 bg-black/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-red-600 hover:text-white"
                           >
                             Eliminar
                           </button>

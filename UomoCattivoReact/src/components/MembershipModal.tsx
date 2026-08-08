@@ -61,6 +61,38 @@ const createInitialPaymentForm = (): PaymentFormState => ({
   autoRenew: true,
 });
 
+const formatCardExpiry = (value: string): string => {
+  const digits = value.replace(/\D/g, '').slice(0, 4);
+  if (!digits) {
+    return '';
+  }
+
+  const monthPart = digits.slice(0, 2);
+  const monthNumber = Number(monthPart);
+  const normalizedMonth = monthPart.length === 2
+    ? monthNumber < 1
+      ? '01'
+      : monthNumber > 12
+        ? '12'
+        : String(monthNumber).padStart(2, '0')
+    : monthPart;
+
+  if (digits.length <= 2) {
+    return normalizedMonth;
+  }
+
+  const yearPart = digits.slice(2, 4);
+  const currentYear = new Date().getFullYear() % 100;
+  const yearNumber = Number(yearPart);
+  const normalizedYear = yearPart.length === 2
+    ? yearNumber < currentYear
+      ? String(currentYear).padStart(2, '0')
+      : String(yearNumber).padStart(2, '0')
+    : yearPart;
+
+  return `${normalizedMonth}/${normalizedYear}`;
+};
+
 export const MembershipModal = ({
   isOpen,
   onClose,
@@ -102,22 +134,19 @@ export const MembershipModal = ({
       return;
     }
 
-    if (initialPlanId) {
-      setSelectedPlanId(initialPlanId);
-    } else if (user?.plan) {
-      setSelectedPlanId(user.plan);
-    }
+    const nextPlanId = initialPlanId ?? user?.plan ?? plans[0]?.id ?? 'bronze';
 
+    setSelectedPlanId(nextPlanId);
     setFlowStep(initialFlowStep);
 
     setRegisterForm((current) => ({
       ...current,
       username: current.username || profileName,
       email: current.email || profileEmail,
-      plan: current.plan || selectedPlanId,
+      plan: current.plan || nextPlanId,
       autoRenew: current.autoRenew ?? true,
     }));
-  }, [initialFlowStep, initialPlanId, isOpen, mode, plans, profileEmail, profileName, selectedPlanId, user?.email, user?.plan]);
+  }, [initialFlowStep, initialPlanId, isOpen, mode, plans, profileEmail, profileName, user?.email, user?.plan]);
 
   const handlePlanSelect = (plan: SubscriptionPlan) => {
     setSelectedPlanId(plan.id);
@@ -147,6 +176,17 @@ export const MembershipModal = ({
       return;
     }
 
+    if (name === 'cardExpiry') {
+      setPaymentForm((current) => ({ ...current, cardExpiry: formatCardExpiry(value) }));
+      return;
+    }
+
+    if (name === 'cardCvc') {
+      const sanitized = value.replace(/\D/g, '').slice(0, 4);
+      setPaymentForm((current) => ({ ...current, cardCvc: sanitized }));
+      return;
+    }
+
     setPaymentForm((current) => ({ ...current, [name]: value }));
   };
 
@@ -168,6 +208,17 @@ export const MembershipModal = ({
     setIsSubmitting(true);
 
     try {
+      if (paymentForm.paymentMethod === 'card') {
+        const expiryMatch = paymentForm.cardExpiry.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+        const currentYear = new Date().getFullYear() % 100;
+        const enteredYear = Number(expiryMatch?.[2] ?? '0');
+
+        if (!expiryMatch || enteredYear < currentYear) {
+          setError('La fecha de expiración debe ser válida en formato MM/AA y no anterior a la fecha actual.');
+          return;
+        }
+      }
+
       if (!isAuthenticated) {
         await register({
           username: registerForm.username.trim(),
@@ -534,8 +585,26 @@ export const MembershipModal = ({
                       <label className="block text-sm text-black/75">
                         <span className="mb-1 block font-medium">Expiración / CVC</span>
                         <div className="flex flex-col gap-2 sm:flex-row">
-                          <input name="cardExpiry" value={paymentForm.cardExpiry} onChange={handlePaymentChange} className="w-full sm:w-1/2 rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none" placeholder="MM/AA" required />
-                          <input name="cardCvc" value={paymentForm.cardCvc} onChange={handlePaymentChange} className="w-full sm:w-1/2 rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none" placeholder="CVC" required />
+                          <input
+                        name="cardExpiry"
+                        value={paymentForm.cardExpiry}
+                        onChange={handlePaymentChange}
+                        inputMode="numeric"
+                        maxLength={5}
+                        className="w-full sm:w-1/2 rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
+                        placeholder="MM/AA"
+                        required
+                      />
+                          <input
+                            name="cardCvc"
+                            value={paymentForm.cardCvc}
+                            onChange={handlePaymentChange}
+                            inputMode="numeric"
+                            maxLength={4}
+                            className="w-full sm:w-1/2 rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
+                            placeholder="CVC"
+                            required
+                          />
                         </div>
                       </label>
                     </div>

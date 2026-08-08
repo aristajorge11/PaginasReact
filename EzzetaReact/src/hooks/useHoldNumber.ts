@@ -20,7 +20,6 @@ export const useHoldNumber = (
         window.removeEventListener('pointerup', clearRef.current);
         window.removeEventListener('pointercancel', clearRef.current);
       } catch (e) {
-        /* ignore */
       }
 
       clearRef.current = null;

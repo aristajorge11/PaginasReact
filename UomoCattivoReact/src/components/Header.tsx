@@ -87,7 +87,7 @@ export const Header = () => {
     };
   }, [isAuthenticated, isLoading, user]);
 
-  const membershipButtonLabel = membership ? `Plan ${membership.plan.nombre}` : null;
+  const membershipButtonLabel = membership ? `${user?.username || 'Cliente'} ${membership.plan.icono}` : null;
 
   const handleLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

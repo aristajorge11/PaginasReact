@@ -1,0 +1,1 @@
+export { ReglasCrudPanel } from "./ReglasCrudPanel";

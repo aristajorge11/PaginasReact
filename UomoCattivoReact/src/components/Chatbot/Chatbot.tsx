@@ -14,6 +14,7 @@ import {
 import ChatMessage from './ChatMessage';
 import { chatbotResponses, type ChatMessage as ChatMessageType } from './chatbotResponses';
 import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 const createMessage = (sender: 'bot' | 'user', text: string): ChatMessageType => ({
   id: Date.now() + Math.random(),
@@ -101,6 +102,7 @@ const getBotResponse = (query: string) => {
 
 const Chatbot = () => {
   const { user } = useAuth();
+  const { isCartOpen } = useWishlist();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
@@ -183,7 +185,7 @@ Soy el asistente virtual de Ezzeta.
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:bottom-6 z-[999] flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl"
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:bottom-6 ${isCartOpen ? 'z-[60]' : 'z-[999]'} flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl`}
         aria-label="Abrir asistente virtual"
       >
         {isOpen ? <X size={26} /> : <MessageCircle size={28} />}
@@ -196,8 +198,8 @@ Soy el asistente virtual de Ezzeta.
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-2 right-2 left-2 z-[999] flex flex-col h-[88vh] w-auto flex-col overflow-hidden rounded-2xl border border-red-600 bg-[#101010] shadow-2x1
-                      sm:left-auto sm:bottom-24 sm:right-6 sm:h-[650px] sm:w-[380px] sm:rounded-3xl"
+            className={`fixed bottom-2 right-2 left-2 ${isCartOpen ? 'z-[60]' : 'z-[999]'} flex flex-col h-[88vh] w-auto flex-col overflow-hidden rounded-2xl border border-red-600 bg-[#101010] shadow-2x1
+                      sm:left-auto sm:bottom-24 sm:right-6 sm:h-[650px] sm:w-[380px] sm:rounded-3xl`}
           >
             <div className="flex items-center justify-between border-b border-white/10 bg-black px-4 sm:px-5 py-3 sm:py-4">
               <div>

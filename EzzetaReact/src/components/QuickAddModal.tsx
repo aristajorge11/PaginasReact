@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import { useHoldNumber } from '../hooks/useHoldNumber';
 import type { Product } from '../types';
+import { PERMISSIONS } from '../utils/permissionCodes';
+import { PermissionGate } from './PermissionGate';
+import PriceDisplay from '../components/PriceDisplay';
 
 type QuickAddModalProps = {
   product: Product;
@@ -45,7 +48,7 @@ export const QuickAddModal = ({ product, initialSize, isOpen, onClose }: QuickAd
               <div className="relative border-b border-zinc-100 bg-zinc-50 md:border-b-0 md:border-r">
                 <img src={product.image} alt={product.name} className="h-64 w-full object-contain p-6 sm:h-72 md:h-full md:min-h-[520px] md:p-8" />
                 <div className="absolute left-4 top-4 rounded-full border border-zinc-200 bg-white/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/70 backdrop-blur">
-                  Quick Shop
+                  Compra Rápida
                 </div>
               </div>
 
@@ -54,18 +57,20 @@ export const QuickAddModal = ({ product, initialSize, isOpen, onClose }: QuickAd
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.2em] text-black/50">Seleccionado</p>
                     <h3 className="mt-2 text-xl font-semibold leading-tight text-black sm:text-2xl">{product.name}</h3>
-                    <p className="mt-2 text-lg font-semibold text-black">S/{product.price}</p>
+                    <PriceDisplay product={product} cantidad={quantity} />
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleFavorite(product.id)}
-                      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition ${isFavorite(product.id) ? 'border-red-600 bg-red-600 text-white shadow-[0_8px_20px_rgba(220,38,38,0.3)]' : 'border-zinc-300 bg-white text-black hover:border-zinc-400'}`}
-                      aria-label={isFavorite(product.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-                    >
-                      <Heart size={16} />
-                    </button>
+                    <PermissionGate permission={PERMISSIONS.productUpdate}>
+                      <button
+                        type="button"
+                        onClick={() => toggleFavorite(product.id)}
+                        className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition ${isFavorite(product.id) ? 'border-red-600 bg-red-600 text-white shadow-[0_8px_20px_rgba(220,38,38,0.3)]' : 'border-zinc-300 bg-white text-black hover:border-zinc-400'}`}
+                        aria-label={isFavorite(product.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      >
+                        <Heart size={16} />
+                      </button>
+                    </PermissionGate>
                     <button
                       type="button"
                       onClick={onClose}
@@ -128,13 +133,15 @@ export const QuickAddModal = ({ product, initialSize, isOpen, onClose }: QuickAd
                 </div>
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() => { addToCart(product.id, selSize, quantity); onClose(); }}
-                    className="inline-flex h-12 items-center justify-center rounded-xl bg-black px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-zinc-800"
-                  >
-                    Agregar
-                  </button>
+                  <PermissionGate permission={PERMISSIONS.salesCreate}>
+                    <button
+                      type="button"
+                      onClick={() => { addToCart(product.id, selSize, quantity); onClose(); }}
+                      className="inline-flex h-12 items-center justify-center rounded-xl bg-black px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-zinc-800"
+                    >
+                      Agregar
+                    </button>
+                  </PermissionGate>
                   <button
                     type="button"
                     onClick={onClose}

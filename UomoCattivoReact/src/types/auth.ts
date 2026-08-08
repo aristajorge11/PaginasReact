@@ -43,10 +43,25 @@ export interface WholesaleUser {
   purchases: PurchaseOrder[];
   daysWithPlan: number;
   createdAt: string;
+  estado?: 'activo' | 'inactivo' | 'suspendido';
+  suspendUntil?: string | null;
+}
+
+export interface Permission {
+  [key: string]: unknown;
+}
+
+export interface Warehouse {
+  [key: string]: unknown;
 }
 
 export interface AuthSession {
   user: WholesaleUser;
+  profile_data: Record<string, unknown> | null;
+  permissions: Permission[];
+  permission_codes: string[];
+  active_warehouse_id: string | number | null;
+  available_warehouses: Warehouse[];
   createdAt: string;
 }
 

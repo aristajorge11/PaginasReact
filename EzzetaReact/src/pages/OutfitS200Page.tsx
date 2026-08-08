@@ -3,11 +3,15 @@ import { Heart, Play, ShoppingBag, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import bannerVideo from '../assets/BANNER-WEB-FONDO_1.mp4';
+import { PermissionGate } from '../components/PermissionGate';
 import { ProductHoverImage } from '../components/ProductHoverImage';
 import QuickAddModal from '../components/QuickAddModal';
+import { resolveProductPrice, usePricingRules } from '../services/pricingService';
 import { useWishlist } from '../context/WishlistContext';
 import { getProducts } from '../services/contentService';
 import type { Product } from '../types';
+import { PERMISSIONS } from '../utils/permissionCodes';
+import PriceDisplay from '../components/PriceDisplay';
 
 const TARGET_BUDGET = 200;
 const POLO_SUBCATEGORIES = ['luxury', 'caffarena', 'supremo', 'prime', 'monarca', 'barrido'];
@@ -140,7 +144,15 @@ export const OutfitS200Page = () => {
     }
   }, [selectedPolera, selectedPoleraSize]);
 
-  const outfitTotal = (selectedPolo?.price ?? 0) + (selectedJean?.price ?? 0) + (selectedPolera?.price ?? 0);
+  const pricingRulesSnapshot = usePricingRules();
+
+  const outfitTotal = useMemo(() => {
+    const poloPrice = selectedPolo ? resolveProductPrice(selectedPolo, {}, pricingRulesSnapshot).precioFinal : 0;
+    const jeanPrice = selectedJean ? resolveProductPrice(selectedJean, {}, pricingRulesSnapshot).precioFinal : 0;
+    const poleraPrice = selectedPolera ? resolveProductPrice(selectedPolera, {}, pricingRulesSnapshot).precioFinal : 0;
+
+    return poloPrice + jeanPrice + poleraPrice;
+  }, [selectedPolo, selectedJean, selectedPolera, pricingRulesSnapshot]);
   const hasCompleteOutfit = Boolean(selectedPolo && selectedJean && selectedPolera);
   const hasCompleteSizes = Boolean(selectedPoloSize && selectedJeanSize && selectedPoleraSize);
   const isOutfitWithinBudget = hasCompleteOutfit && outfitTotal <= TARGET_BUDGET;
@@ -229,6 +241,170 @@ export const OutfitS200Page = () => {
         </div>
       </div>
 
+      <div className="space-y-4 border border-zinc-200 bg-white p-5 shadow-[0_12px_35px_rgba(0,0,0,0.04)] sm:p-6">
+        <div>
+          <h2 className="text-xl font-semibold uppercase tracking-[0.16em] text-black">Arma tu Outfit</h2>
+          <p className="mt-2 text-sm text-black/65">Selecciona 1 Polo, 1 Jean y 1 Polera para validar el total final.</p>
+          {!poleraProducts.length ? <p className="mt-2 text-xs text-black/55">No hay productos de la categoría Polera disponibles.</p> : null}
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-3xl border border-black/10 bg-zinc-50 p-4">
+            <div className="flex flex-col gap-3 max-[425px]:flex-row max-[425px]:items-center md:flex-col md:items-start">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/60">Polo</p>
+                <label htmlFor="outfit-polo" className="sr-only">Seleccionar Polo</label>
+                <select
+                  id="outfit-polo"
+                  value={selectedPoloSlug}
+                  onChange={(event) => setSelectedPoloSlug(event.target.value)}
+                  className="mt-2 w-full rounded-full border border-black/10 bg-white px-3 py-2 text-sm outline-none"
+                >
+                  {poloProducts.map((product) => (
+                    <option key={product.id} value={product.slug}>{product.name} - S/{resolveProductPrice(product).precioFinal.toFixed(2)}</option>
+                  ))}
+                </select>
+
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-black/60">Talla</p>
+                <label htmlFor="outfit-polo-size" className="sr-only">Seleccionar talla de Polo</label>
+                <select
+                  id="outfit-polo-size"
+                  value={selectedPoloSize}
+                  onChange={(event) => setSelectedPoloSize(event.target.value)}
+                  className="mt-2 w-full rounded-full border border-black/10 bg-white px-3 py-2 text-sm outline-none"
+                  disabled={!selectedPolo || selectedPolo.sizes.length === 0}
+                >
+                  {(selectedPolo?.sizes ?? []).map((size) => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-full overflow-hidden rounded-2xl bg-white shadow-sm max-[425px]:w-24 max-[425px]:h-24 md:w-24 md:h-24">
+                {selectedPolo?.image ? (
+                  <img src={selectedPolo.image} alt={selectedPolo.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-[10px] uppercase tracking-[0.16em] text-black/45">
+                    Sin imagen
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-medium uppercase tracking-[0.12em] text-black/60">{selectedPolo?.name ?? 'Sin selección'}</p>
+          </div>
+
+          <div className="rounded-3xl border border-black/10 bg-zinc-50 p-4">
+            <div className="flex flex-col gap-3 max-[425px]:flex-row max-[425px]:items-center md:flex-col md:items-start">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/60">Jean</p>
+                <label htmlFor="outfit-jean" className="sr-only">Seleccionar Jean</label>
+                <select
+                  id="outfit-jean"
+                  value={selectedJeanSlug}
+                  onChange={(event) => setSelectedJeanSlug(event.target.value)}
+                  className="mt-2 w-full rounded-full border border-black/10 bg-white px-3 py-2 text-sm outline-none"
+                >
+                  {jeanProducts.map((product) => (
+                    <option key={product.id} value={product.slug}>{product.name} - S/{resolveProductPrice(product).precioFinal.toFixed(2)}</option>
+                  ))}
+                </select>
+
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-black/60">Talla</p>
+                <label htmlFor="outfit-jean-size" className="sr-only">Seleccionar talla de Jean</label>
+                <select
+                  id="outfit-jean-size"
+                  value={selectedJeanSize}
+                  onChange={(event) => setSelectedJeanSize(event.target.value)}
+                  className="mt-2 w-full rounded-full border border-black/10 bg-white px-3 py-2 text-sm outline-none"
+                  disabled={!selectedJean || selectedJean.sizes.length === 0}
+                >
+                  {(selectedJean?.sizes ?? []).map((size) => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-full overflow-hidden rounded-2xl bg-white shadow-sm max-[425px]:w-24 max-[425px]:h-24 md:w-24 md:h-24">
+                {selectedJean?.image ? (
+                  <img src={selectedJean.image} alt={selectedJean.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-[10px] uppercase tracking-[0.16em] text-black/45">
+                    Sin imagen
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-medium uppercase tracking-[0.12em] text-black/60">{selectedJean?.name ?? 'Sin selección'}</p>
+          </div>
+
+          <div className="rounded-3xl border border-black/10 bg-zinc-50 p-4">
+            <div className="flex flex-col gap-3 max-[425px]:flex-row max-[425px]:items-center md:flex-col md:items-start">
+              <div className="flex-1 min-w-0">
+                <label htmlFor="outfit-polera" className="sr-only">Seleccionar Polera</label>
+                <select
+                  id="outfit-polera"
+                  value={selectedPoleraSlug}
+                  onChange={(event) => setSelectedPoleraSlug(event.target.value)}
+                  className="mt-2 w-full rounded-full border border-black/10 bg-white px-3 py-2 text-sm outline-none"
+                >
+                  {poleraProducts.map((product) => (
+                    <option key={product.id} value={product.slug}>{product.name} - S/{resolveProductPrice(product).precioFinal.toFixed(2)}</option>
+                  ))}
+                </select>
+
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-black/60">Talla</p>
+                <label htmlFor="outfit-polera-size" className="sr-only">Seleccionar talla de Polera</label>
+                <select
+                  id="outfit-polera-size"
+                  value={selectedPoleraSize}
+                  onChange={(event) => setSelectedPoleraSize(event.target.value)}
+                  className="mt-2 w-full rounded-full border border-black/10 bg-white px-3 py-2 text-sm outline-none"
+                  disabled={!selectedPolera || selectedPolera.sizes.length === 0}
+                >
+                  {(selectedPolera?.sizes ?? []).map((size) => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-full overflow-hidden rounded-2xl bg-white shadow-sm max-[425px]:w-24 max-[425px]:h-24 md:w-24 md:h-24">
+                {selectedPolera?.image ? (
+                  <img src={selectedPolera.image} alt={selectedPolera.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-[10px] uppercase tracking-[0.16em] text-black/45">
+                    Sin imagen
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="mt-3 text-xs font-medium uppercase tracking-[0.12em] text-black/60">{selectedPolera?.name ?? 'Sin selección'}</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-black/10 bg-zinc-50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm uppercase tracking-[0.16em] text-black/65">Total del outfit</p>
+            <p className="text-2xl font-semibold text-red-600">S/{outfitTotal.toFixed(2)}</p>
+          </div>
+          <p className={`mt-2 text-sm ${isOutfitWithinBudget ? 'text-emerald-700' : 'text-red-600'}`}>
+            {hasCompleteOutfit
+              ? isOutfitWithinBudget
+                ? `Tu outfit está dentro del objetivo: S/${TARGET_BUDGET} o menos.`
+                : `Tu outfit supera S/${TARGET_BUDGET}. Prueba otras combinaciones.`
+              : 'Selecciona un producto en cada categoría para calcular el total.'}
+          </p>
+
+          <PermissionGate permission={PERMISSIONS.salesCreate}>
+            <button
+              type="button"
+              onClick={addOutfitToCart}
+              disabled={!canAddOutfitToCart}
+              className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-black/30"
+            >
+              Agregar outfit al carrito
+            </button>
+          </PermissionGate>
+        </div>
+
+      </div>
+
       <div className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-2xl font-semibold uppercase tracking-[0.16em] text-black">Catálogo S/200</h2>
@@ -240,7 +416,7 @@ export const OutfitS200Page = () => {
             No hay productos disponibles para las categorías Jean, Polo y Polera.
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {outfitProducts.map((product) => (
               <article
                 key={product.id}
@@ -249,7 +425,17 @@ export const OutfitS200Page = () => {
                 <Link to={`/producto/${product.slug}`} className="block">
                   <div className="relative h-72 overflow-hidden rounded-t-[1.5rem] bg-zinc-50 p-3">
                     <ProductHoverImage product={product} alt={product.name} className="h-full w-full object-contain" />
-                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-3 opacity-100 sm:opacity-0 sm:transition sm:duration-300 sm:group-hover:opacity-100">
+                  </div>
+                </Link>
+                <div className="flex flex-1 flex-col p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-2">
+                      <Link to={`/producto/${product.slug}`} className="text-base font-semibold text-black transition hover:text-red-600">
+                        {product.name}
+                      </Link>
+                      <p className="text-xs uppercase tracking-[0.14em] text-black/50">{product.category}</p>
+                    </div>
+                    <PermissionGate permission={PERMISSIONS.productUpdate}>
                       <button
                         type="button"
                         onClick={(event) => {
@@ -257,11 +443,23 @@ export const OutfitS200Page = () => {
                           event.stopPropagation();
                           toggleFavorite(product.id);
                         }}
-                        className={`inline-flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur transition duration-300 ${favorites.includes(product.id) ? 'border-red-600 bg-red-600 text-white shadow-[0_10px_22px_rgba(193,18,31,0.18)]' : 'border-white/30 bg-black/45 text-white hover:border-red-500 hover:bg-red-600'}`}
+                        className={`inline-flex h-11 w-11 items-center justify-center rounded-full border transition duration-300 ${favorites.includes(product.id) ? 'border-red-600 bg-red-600 text-white shadow-[0_10px_22px_rgba(193,18,31,0.18)]' : 'border-black/10 bg-white text-black hover:border-red-600/30 hover:bg-red-50 hover:text-red-600'}`}
                         aria-label={favorites.includes(product.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'}
                       >
                         <Heart size={16} />
                       </button>
+                    </PermissionGate>
+                  </div>
+
+                  <div className="mt-auto flex flex-col gap-4 border-t border-black/6 pt-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-2xl font-semibold tracking-[-0.04em] text-black">
+                          <PriceDisplay product={product} />
+                        </p>
+                      </div>
+                    </div>
+                    <PermissionGate permission={PERMISSIONS.salesCreate}>
                       <button
                         type="button"
                         onClick={(event) => {
@@ -269,171 +467,17 @@ export const OutfitS200Page = () => {
                           event.stopPropagation();
                           openQuickBuy(product);
                         }}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/55 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white backdrop-blur transition duration-300 hover:border-red-500 hover:bg-red-600"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-black px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition duration-300 hover:border-red-600 hover:bg-red-600 sm:w-auto"
                       >
                         <ShoppingBag size={15} />
                       </button>
-                    </div>
+                    </PermissionGate>
                   </div>
-                </Link>
-                <div className="flex flex-1 flex-col p-4">
-                  <Link to={`/producto/${product.slug}`} className="text-base font-semibold text-black transition hover:text-red-600">
-                    {product.name}
-                  </Link>
-                  <p className="mt-1 text-xs uppercase tracking-[0.14em] text-black/50">{product.category}</p>
-                  <p className="mt-2 text-lg font-semibold text-red-600">S/{product.price}</p>
                 </div>
               </article>
             ))}
           </div>
         )}
-      </div>
-
-      <div className="space-y-4 border border-zinc-200 bg-white p-5 shadow-[0_12px_35px_rgba(0,0,0,0.04)] sm:p-6">
-        <div>
-          <h2 className="text-xl font-semibold uppercase tracking-[0.16em] text-black">Arma tu Outfit</h2>
-          <p className="mt-2 text-sm text-black/65">Selecciona 1 Polo, 1 Jean y 1 Polera para validar el total final.</p>
-          {!poleraProducts.length ? <p className="mt-2 text-xs text-black/55">No hay productos de la categoría Polera disponibles.</p> : null}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          <div>
-            <label htmlFor="outfit-polo" className="text-xs font-medium uppercase tracking-[0.16em] text-black/60">Polo</label>
-            <select
-              id="outfit-polo"
-              value={selectedPoloSlug}
-              onChange={(event) => setSelectedPoloSlug(event.target.value)}
-              className="mt-2 w-full rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
-            >
-              {poloProducts.map((product) => (
-                <option key={product.id} value={product.slug}>{product.name} - S/{product.price}</option>
-              ))}
-            </select>
-
-            <label htmlFor="outfit-polo-size" className="mt-3 block text-xs font-medium uppercase tracking-[0.16em] text-black/60">Talla</label>
-            <select
-              id="outfit-polo-size"
-              value={selectedPoloSize}
-              onChange={(event) => setSelectedPoloSize(event.target.value)}
-              className="mt-2 w-full rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
-              disabled={!selectedPolo || selectedPolo.sizes.length === 0}
-            >
-              {(selectedPolo?.sizes ?? []).map((size) => (
-                <option key={size} value={size}>{size}</option>
-              ))}
-            </select>
-
-            <div className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 p-3">
-              {selectedPolo?.image ? (
-                <img src={selectedPolo.image} alt={selectedPolo.name} className="h-36 w-full rounded-xl object-contain" />
-              ) : (
-                <div className="flex h-36 items-center justify-center rounded-xl bg-white text-xs uppercase tracking-[0.16em] text-black/45">
-                  Sin imagen
-                </div>
-              )}
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-black/60">{selectedPolo?.name ?? 'Sin selección'}</p>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="outfit-jean" className="text-xs font-medium uppercase tracking-[0.16em] text-black/60">Jean</label>
-            <select
-              id="outfit-jean"
-              value={selectedJeanSlug}
-              onChange={(event) => setSelectedJeanSlug(event.target.value)}
-              className="mt-2 w-full rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
-            >
-              {jeanProducts.map((product) => (
-                <option key={product.id} value={product.slug}>{product.name} - S/{product.price}</option>
-              ))}
-            </select>
-
-            <label htmlFor="outfit-jean-size" className="mt-3 block text-xs font-medium uppercase tracking-[0.16em] text-black/60">Talla</label>
-            <select
-              id="outfit-jean-size"
-              value={selectedJeanSize}
-              onChange={(event) => setSelectedJeanSize(event.target.value)}
-              className="mt-2 w-full rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
-              disabled={!selectedJean || selectedJean.sizes.length === 0}
-            >
-              {(selectedJean?.sizes ?? []).map((size) => (
-                <option key={size} value={size}>{size}</option>
-              ))}
-            </select>
-
-            <div className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 p-3">
-              {selectedJean?.image ? (
-                <img src={selectedJean.image} alt={selectedJean.name} className="h-36 w-full rounded-xl object-contain" />
-              ) : (
-                <div className="flex h-36 items-center justify-center rounded-xl bg-white text-xs uppercase tracking-[0.16em] text-black/45">
-                  Sin imagen
-                </div>
-              )}
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-black/60">{selectedJean?.name ?? 'Sin selección'}</p>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="outfit-polera" className="text-xs font-medium uppercase tracking-[0.16em] text-black/60">Polera</label>
-            <select
-              id="outfit-polera"
-              value={selectedPoleraSlug}
-              onChange={(event) => setSelectedPoleraSlug(event.target.value)}
-              className="mt-2 w-full rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
-            >
-              {poleraProducts.map((product) => (
-                <option key={product.id} value={product.slug}>{product.name} - S/{product.price}</option>
-              ))}
-            </select>
-
-            <label htmlFor="outfit-polera-size" className="mt-3 block text-xs font-medium uppercase tracking-[0.16em] text-black/60">Talla</label>
-            <select
-              id="outfit-polera-size"
-              value={selectedPoleraSize}
-              onChange={(event) => setSelectedPoleraSize(event.target.value)}
-              className="mt-2 w-full rounded-full border border-black/10 bg-white px-4 py-3 text-sm outline-none"
-              disabled={!selectedPolera || selectedPolera.sizes.length === 0}
-            >
-              {(selectedPolera?.sizes ?? []).map((size) => (
-                <option key={size} value={size}>{size}</option>
-              ))}
-            </select>
-
-            <div className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-zinc-50 p-3">
-              {selectedPolera?.image ? (
-                <img src={selectedPolera.image} alt={selectedPolera.name} className="h-36 w-full rounded-xl object-contain" />
-              ) : (
-                <div className="flex h-36 items-center justify-center rounded-xl bg-white text-xs uppercase tracking-[0.16em] text-black/45">
-                  Sin imagen
-                </div>
-              )}
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.12em] text-black/60">{selectedPolera?.name ?? 'Sin selección'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-black/10 bg-zinc-50 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm uppercase tracking-[0.16em] text-black/65">Total del outfit</p>
-            <p className="text-2xl font-semibold text-red-600">S/{outfitTotal}</p>
-          </div>
-          <p className={`mt-2 text-sm ${isOutfitWithinBudget ? 'text-emerald-700' : 'text-red-600'}`}>
-            {hasCompleteOutfit
-              ? isOutfitWithinBudget
-                ? `Tu outfit está dentro del objetivo: S/${TARGET_BUDGET} o menos.`
-                : `Tu outfit supera S/${TARGET_BUDGET}. Prueba otras combinaciones.`
-              : 'Selecciona un producto en cada categoría para calcular el total.'}
-          </p>
-
-          <button
-            type="button"
-            onClick={addOutfitToCart}
-            disabled={!canAddOutfitToCart}
-            className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-black/30"
-          >
-            Agregar outfit al carrito
-          </button>
-        </div>
       </div>
 
       <AnimatePresence>

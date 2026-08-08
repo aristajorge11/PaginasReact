@@ -1,9 +1,17 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { StorageKeys, storageManager } from '../storage';
 import { AuthService } from '../services/authService';
-import type { AuthSession, LoginCredentials, PurchaseOrderInput, RegisterUserInput, SubscriptionUpdateInput, WholesaleUser } from '../types/auth';
+import type {AuthSession,LoginCredentials,Permission,PurchaseOrderInput,
+  RegisterUserInput,SubscriptionUpdateInput,Warehouse,WholesaleUser,} from '../types/auth';
 
 type AuthContextType = {
   user: WholesaleUser | null;
+  profileData: Record<string, unknown> | null;
+  permissions: Permission[];
+  permissionCodes: string[];
+  activeWarehouseId: string | number | null;
+  availableWarehouses: Warehouse[];
+  hasPermission: (permissionCode: string) => boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -19,6 +27,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const permissionCodes = useMemo(() => session?.permission_codes ?? [], [session?.permission_codes]);
+  const profileData = useMemo(() => session?.profile_data ?? null, [session?.profile_data]);
+  const permissions = useMemo(() => session?.permissions ?? [], [session?.permissions]);
+  const activeWarehouseId = useMemo(() => session?.active_warehouse_id ?? null, [session?.active_warehouse_id]);
+  const availableWarehouses = useMemo(() => session?.available_warehouses ?? [], [session?.available_warehouses]);
+
+  const hasPermission = useCallback(
+    (permissionCode: string) => {
+      const normalizedPermissionCode = permissionCode.trim();
+      return normalizedPermissionCode.length > 0 && permissionCodes.includes(normalizedPermissionCode);
+    },
+    [permissionCodes],
+  );
+
   useEffect(() => {
     const initializeSession = async () => {
       try {
@@ -32,6 +54,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     void initializeSession();
+  }, []);
+
+  useEffect(() => {
+    const refreshSession = async () => {
+      try {
+        const refreshed = await AuthService.me();
+        setSession(refreshed);
+      } catch {
+      }
+    };
+
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === StorageKeys.AUTH || e.key === StorageKeys.ROLES_UPDATED) {
+        void refreshSession();
+      }
+    };
+
+    window.addEventListener('storage', storageHandler);
+
+    return () => {
+      window.removeEventListener('storage', storageHandler);
+    };
   }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
@@ -55,13 +99,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const logout = useCallback(async () => {
-    await AuthService.logout();
+    try {
+      await AuthService.logout();
+    } catch {
+    }
+
     setSession(null);
+
+    try {
+      storageManager.auth.clear();
+    } catch {
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.removeItem(StorageKeys.AUTH);
+      } catch {
+      }
+    }
   }, []);
 
   const value = useMemo<AuthContextType>(
     () => ({
       user: session?.user ?? null,
+      profileData,
+      permissions,
+      permissionCodes,
+      activeWarehouseId,
+      availableWarehouses,
+      hasPermission,
       isAuthenticated: Boolean(session?.user),
       isLoading,
       login,
@@ -70,7 +136,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       recordPurchase,
       logout,
     }),
-    [isLoading, login, logout, recordPurchase, register, session?.user, updateSubscription],
+    [
+      activeWarehouseId,
+      availableWarehouses,
+      hasPermission,
+      isLoading,
+      login,
+      logout,
+      permissionCodes,
+      permissions,
+      profileData,
+      recordPurchase,
+      register,
+      session?.user,
+      updateSubscription,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

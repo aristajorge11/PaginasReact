@@ -2,32 +2,18 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Heart, Minus, Plus, ShoppingBag, SlidersHorizontal, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useHoldNumber } from '../hooks/useHoldNumber';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ProductHoverImage } from '../components/ProductHoverImage';
+import PriceDisplay from '../components/PriceDisplay';
+import { PermissionGate } from '../components/PermissionGate';
 import { useWishlist } from '../context/WishlistContext';
-import { getProducts } from '../services/contentService';
+import { resolveProductPrice } from '../services/pricingService';
+import { useProductsCatalog } from '../services/contentService';
 import type { Product } from '../types';
+import { PERMISSIONS } from '../utils/permissionCodes';
 
-type FilterCategory = 'Todas' | 'POLO' | 'POLERA' | 'CASACA' | 'JEAN';
 type FilterSection = 'categories' | 'subcategories' | 'price' | 'sizes';
 
-const categoryOptions: FilterCategory[] = ['Todas', 'POLO', 'POLERA', 'CASACA', 'JEAN'];
-const subcategoryOptions: Record<Exclude<FilterCategory, 'Todas'>, string[]> = {
-  POLO: ['Luxury', 'Caffarena', 'Supremo', 'Prime', 'Monarca', 'Barrido'],
-  POLERA: ['Básica', 'Cr', 'Canguro', 'Drip'],
-  CASACA: ['Básica'],
-  JEAN: ['Clásico', 'Flared', 'Baggy', 'Ballom', 'Mom'],
-};
-
-const allSubcategories = Array.from(
-  new Set(
-    Object.values(subcategoryOptions)
-      .flat()
-      .sort()
-  )
-);
-
-const sizeOptions = ['S', 'M', 'L', 'XL', '28', '30', '32', '34', '36'];
 const normalizeText = (value: string) =>
   value
     .toLowerCase()
@@ -35,43 +21,14 @@ const normalizeText = (value: string) =>
     .replace(/[\u0300-\u036f]/g, '')
     .trim();
 
-const getCanonicalCategory = (rawCategory: string): Exclude<FilterCategory, 'Todas'> | null => {
-  const normalized = normalizeText(rawCategory);
-
-  if (normalized.includes('polo')) {
-    return 'POLO';
-  }
-
-  if (normalized.includes('polera')) {
-    return 'POLERA';
-  }
-
-  if (normalized.includes('casaca')) {
-    return 'CASACA';
-  }
-
-  if (normalized.includes('jean') || normalized.includes('pantalon')) {
-    return 'JEAN';
-  }
-
-  return null;
-};
-
-const getCanonicalCategoryFromParam = (rawCategory: string): FilterCategory => {
-  const normalized = normalizeText(rawCategory);
-
-  if (normalized === 'todas') {
-    return 'Todas';
-  }
-
-  const canonical = getCanonicalCategory(rawCategory);
-
-  return canonical ?? 'Todas';
-};
-
-const getProductCategory = (product: { category: string }) => {
-  return getCanonicalCategory(product.category);
-};
+const buildUniqueValues = (items: string[]) =>
+  Array.from(
+    new Map(
+      items
+        .filter(Boolean)
+        .map((value) => [normalizeText(value), value.trim()])
+    ).values()
+  ).sort((a, b) => normalizeText(a).localeCompare(normalizeText(b)));
 
 type SortOption = 'ultimos' | 'popularidad' | 'vista';
 
@@ -83,13 +40,14 @@ const gridClassMap: Record<1 | 2 | 3 | 4, string> = {
 };
 
 export const StorePage = () => {
+  const navigate = useNavigate();
   const { favorites, toggleFavorite, addToCart } = useWishlist();
-  const products = getProducts();
+  const products = useProductsCatalog();
   const [searchParams] = useSearchParams();
-  const search = searchParams.get("search") ?? "";
-  const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('Todas');
+  const search = searchParams.get('search') ?? '';
+  const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
   const [selectedSubcategory, setSelectedSubcategory] = useState('Todas');
-  const [draftCategory, setDraftCategory] = useState<FilterCategory>('Todas');
+  const [draftCategory, setDraftCategory] = useState<string>('Todas');
   const [draftSubcategory, setDraftSubcategory] = useState('Todas');
   const [quickCartProduct, setQuickCartProduct] = useState<Product | null>(null);
   const [quickCartSize, setQuickCartSize] = useState('M');
@@ -111,13 +69,32 @@ export const StorePage = () => {
     sizes: false,
   });
 
+  const categoryOptions = useMemo(
+    () => ['Todas', ...buildUniqueValues(products.map((product) => product.category))],
+    [products]
+  );
+
+  const allSubcategories = useMemo(
+    () => buildUniqueValues(products.map((product) => product.subcategory)),
+    [products]
+  );
+
   const subcategories = useMemo(() => {
     if (draftCategory === 'Todas') {
       return allSubcategories;
     }
 
-    return subcategoryOptions[draftCategory];
-  }, [draftCategory]);
+    return buildUniqueValues(
+      products
+        .filter((product) => normalizeText(product.category) === normalizeText(draftCategory))
+        .flatMap((product) => product.subcategory ? [product.subcategory] : [])
+    );
+  }, [draftCategory, allSubcategories, products]);
+
+  const sizeOptions = useMemo(
+    () => buildUniqueValues(products.flatMap((product) => product.sizes)),
+    [products]
+  );
 
   const sortedProducts = useMemo(() => {
     const source = [...products];
@@ -144,8 +121,8 @@ export const StorePage = () => {
 
   const filteredProducts = useMemo(() => {
     return sortedProducts.filter((product) => {
-      const productCategory = getProductCategory(product);
-      const matchesCategory = selectedCategory === 'Todas' || productCategory === selectedCategory;
+      const matchesCategory =
+        selectedCategory === 'Todas' || normalizeText(product.category) === normalizeText(selectedCategory);
       const matchesSubcategory =
         selectedSubcategory === 'Todas' || normalizeText(product.subcategory) === normalizeText(selectedSubcategory);
       const matchesPrice = product.price >= selectedPriceRange[0] && product.price <= selectedPriceRange[1];
@@ -211,51 +188,85 @@ export const StorePage = () => {
     }, [products]);
 
   useEffect(() => {
-      const category = searchParams.get("category");
-      const subcategory = searchParams.get("subcategory");
+      const categoryParam = searchParams.get('category');
+      const subcategoryParam = searchParams.get('subcategory');
 
-      if (category) {
-          const canonicalCategory = getCanonicalCategoryFromParam(category);
-          setSelectedCategory(canonicalCategory);
-          setDraftCategory(canonicalCategory);
+      if (categoryParam) {
+          const matchedCategory = categoryOptions.find((option) => normalizeText(option) === normalizeText(categoryParam));
+          setSelectedCategory(matchedCategory ?? 'Todas');
+          setDraftCategory(matchedCategory ?? 'Todas');
       }
 
-      if (subcategory) {
-          setSelectedSubcategory(subcategory);
-          setDraftSubcategory(subcategory);
+      if (subcategoryParam) {
+          const matchedSubcategory = allSubcategories.find((option) => normalizeText(option) === normalizeText(subcategoryParam));
+          setSelectedSubcategory(matchedSubcategory ?? 'Todas');
+          setDraftSubcategory(matchedSubcategory ?? 'Todas');
       } else {
-          setSelectedSubcategory("Todas");
-          setDraftSubcategory("Todas");
+          setSelectedSubcategory('Todas');
+          setDraftSubcategory('Todas');
       }
-  }, [searchParams]);
+  }, [searchParams, categoryOptions, allSubcategories]);
 
   useEffect(() => {
     if (selectedSubcategory === 'Todas') {
       return;
     }
 
-    const availableSubcategories = selectedCategory === 'Todas' ? allSubcategories : subcategoryOptions[selectedCategory];
+    const availableSubcategories =
+      selectedCategory === 'Todas'
+        ? allSubcategories
+        : buildUniqueValues(
+            products
+              .filter((product) => normalizeText(product.category) === normalizeText(selectedCategory))
+              .flatMap((product) => product.subcategory ? [product.subcategory] : [])
+          );
 
     if (!availableSubcategories.some((subcategory) => normalizeText(subcategory) === normalizeText(selectedSubcategory))) {
       setSelectedSubcategory('Todas');
     }
-  }, [selectedCategory, selectedSubcategory]);
+  }, [products, selectedCategory, selectedSubcategory, allSubcategories]);
 
   useEffect(() => {
     if (draftSubcategory === 'Todas') {
       return;
     }
 
-    const availableSubcategories = draftCategory === 'Todas' ? allSubcategories : subcategoryOptions[draftCategory];
+    const availableSubcategories =
+      draftCategory === 'Todas'
+        ? allSubcategories
+        : buildUniqueValues(
+            products
+              .filter((product) => normalizeText(product.category) === normalizeText(draftCategory))
+              .flatMap((product) => product.subcategory ? [product.subcategory] : [])
+          );
 
     if (!availableSubcategories.some((subcategory) => normalizeText(subcategory) === normalizeText(draftSubcategory))) {
       setDraftSubcategory('Todas');
     }
-  }, [draftCategory, draftSubcategory]);
+  }, [products, draftCategory, draftSubcategory, allSubcategories]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory, selectedSubcategory, selectedPriceRange, selectedSize, sortBy]);
+  }, [selectedCategory, selectedSubcategory, selectedPriceRange, selectedSize, sortBy, search]);
+
+  useEffect(() => {
+    if (currentPage > pageCount) {
+      setCurrentPage(pageCount);
+    }
+  }, [currentPage, pageCount]);
+
+  const goToPage = (page: number) => {
+    const nextPage = Math.min(pageCount, Math.max(1, page));
+    setCurrentPage(nextPage);
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    });
+  };
+
+  const openProduct = (product: Product) => {
+    const slugBase = product.slug || `producto-${product.id}`;
+    navigate(`/producto/${encodeURIComponent(slugBase)}`);
+  };
 
   const openQuickCart = (product: Product) => {
     setQuickCartProduct(product);
@@ -372,6 +383,7 @@ export const StorePage = () => {
             ) : (
               <>
                 <motion.div
+                  key={currentPage}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -383,6 +395,12 @@ export const StorePage = () => {
                       ? Math.max(1, Math.round((1 - product.price / product.previousPrice) * 100))
                       : null;
 
+                    const resultadoPrecio = resolveProductPrice(product);
+                    const precioOriginal = resultadoPrecio.precioOriginal;
+                    const precioFinal = resultadoPrecio.precioFinal;
+                    const hayDescuento = resultadoPrecio.descuentoAplicado > 0 && precioFinal < precioOriginal;
+                    const etiquetaDescuento = resultadoPrecio.etiquetaDescuento;
+
                     return (
                       <motion.article
                         key={product.id}
@@ -390,9 +408,18 @@ export const StorePage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.28, ease: 'easeOut', delay: index * 0.03 }}
                         whileHover={{ y: -8 }}
-                        className="group flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-black/8 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.04)] transition duration-300 hover:border-red-900/20 hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)]"
+                        onClick={() => openProduct(product)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            openProduct(product);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.8rem] border border-black/8 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.04)] transition duration-300 hover:border-red-900/20 hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)]"
                       >
-                        <Link to={`/producto/${product.slug}`} className="block">
+                        <div className="flex flex-1 flex-col">
                           <div className="relative aspect-[4/5] overflow-hidden bg-zinc-50">
                             {discountPercentage ? (
                               <span className="absolute left-4 top-4 z-10 rounded-full bg-black px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white shadow-[0_10px_25px_rgba(0,0,0,0.16)]">
@@ -405,53 +432,55 @@ export const StorePage = () => {
                               className="h-full w-full object-contain p-5 transition duration-300 group-hover:scale-[1.02]"
                             />
                           </div>
-                        </Link>
 
-                        <div className="flex flex-1 flex-col gap-5 p-5">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="space-y-2">
-                              <p className="text-[0.68rem] uppercase tracking-[0.24em] text-black/45">{product.category}</p>
-                              <h3 className="text-lg font-semibold leading-snug text-black">{product.name}</h3>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                toggleFavorite(product.id);
-                              }}
-                              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition duration-300 ${isFavorite ? 'border-red-600 bg-red-600 text-white shadow-[0_10px_22px_rgba(193,18,31,0.18)]' : 'border-black/10 bg-white text-black hover:border-red-600/30 hover:bg-red-50 hover:text-red-600'}`}
-                              aria-label={isFavorite ? 'Quitar de wishlist' : 'Agregar a wishlist'}
-                            >
-                              <Heart size={15} />
-                            </button>
-                          </div>
-
-                          <div className="mt-auto flex flex-col gap-4 border-t border-black/6 pt-4 sm:flex-row sm:items-end sm:justify-between">
-                            <div className="space-y-1">
-                              {product.previousPrice ? (
-                                <p className="text-sm text-black/40 line-through">S/{product.previousPrice}</p>
-                              ) : null}
-                              <div className="flex items-center gap-2">
-                                <p className="text-2xl font-semibold tracking-[-0.04em] text-black">S/{product.price}</p>
-                                {product.previousPrice ? (
-                                  <span className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-red-600">
-                                    Oferta
-                                  </span>
-                                ) : null}
+                          <div className="flex flex-1 flex-col gap-5 p-5">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="space-y-2">
+                                <p className="text-[0.68rem] uppercase tracking-[0.24em] text-black/45">{product.category}</p>
+                                <h3 className="text-lg font-semibold leading-snug text-black">{product.name}</h3>
                               </div>
+                              <PermissionGate permission={PERMISSIONS.productUpdate}>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    toggleFavorite(product.id);
+                                  }}
+                                  className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition duration-300 ${isFavorite ? 'border-red-600 bg-red-600 text-white shadow-[0_10px_22px_rgba(193,18,31,0.18)]' : 'border-black/10 bg-white text-black hover:border-red-600/30 hover:bg-red-50 hover:text-red-600'}`}
+                                  aria-label={isFavorite ? 'Quitar de wishlist' : 'Agregar a wishlist'}
+                                >
+                                  <Heart size={15} />
+                                </button>
+                              </PermissionGate>
                             </div>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                openQuickCart(product);
-                              }}
-                              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-black px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition duration-300 hover:border-red-600 hover:bg-red-600 sm:w-auto"
-                            >
-                              <ShoppingBag size={15} />
-                            </button>
+
+                            <div className="mt-auto flex flex-col gap-4 border-t border-black/6 pt-4 sm:flex-row sm:items-end sm:justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-2xl font-semibold tracking-[-0.04em] text-black"> 
+                                    <PriceDisplay product={product}/>
+                                      {hayDescuento && etiquetaDescuento ? (
+                                        <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-red-600">
+                                        {etiquetaDescuento}
+                                        </span>
+                                      ) : null}</p>
+                                </div>
+                              </div>
+                              <PermissionGate permission={PERMISSIONS.salesCreate}>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    openQuickCart(product);
+                                  }}
+                                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-black px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition duration-300 hover:border-red-600 hover:bg-red-600 sm:w-auto"
+                                >
+                                  <ShoppingBag size={15} />
+                                </button>
+                              </PermissionGate>
+                            </div>
                           </div>
                         </div>
                       </motion.article>
@@ -466,7 +495,7 @@ export const StorePage = () => {
                   <div className="flex w-full items-center gap-2 sm:w-auto">
                     <button
                       type="button"
-                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                      onClick={() => goToPage(currentPage - 1)}
                       disabled={currentPage === 1}
                       className="flex-1 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-medium text-black transition duration-300 hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
                     >
@@ -477,7 +506,7 @@ export const StorePage = () => {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
+                      onClick={() => goToPage(currentPage + 1)}
                       disabled={currentPage === pageCount}
                       className="flex-1 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-medium text-black transition duration-300 hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
                     >
@@ -785,12 +814,16 @@ export const StorePage = () => {
 
               <div className="mt-6 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
                 <div className="overflow-hidden rounded-[1.5rem] bg-zinc-50 h-64 sm:h-80 lg:h-auto">
-                  <img src={quickCartProduct.image} alt={quickCartProduct.name} className="h-full w-full object-cover" />
+                  {quickCartProduct.image ? (
+                    <img src={quickCartProduct.image} alt={quickCartProduct.name} className="h-full w-full object-cover" />
+                  ) : null}
                 </div>
                 <div className="space-y-3 sm:space-y-4">
                   <div>
                     <p className="text-[0.68rem] uppercase tracking-[0.28em] text-black/45">Precio</p>
-                    <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-red-600 sm:text-3xl">S/{quickCartProduct.price}</p>
+                    <div>
+                      <PriceDisplay product={quickCartProduct} cantidad={quickCartQuantity} />
+                    </div>
                   </div>
                   <div>
                     <label className="text-[0.68rem] uppercase tracking-[0.28em] text-black/45">Talla</label>
@@ -838,13 +871,15 @@ export const StorePage = () => {
                       </button>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={confirmQuickCart}
-                    className="mt-4 w-full rounded-full bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition duration-300 hover:bg-red-600"
-                  >
-                    Añadir al carrito
-                  </button>
+                  <PermissionGate permission={PERMISSIONS.salesCreate}>
+                    <button
+                      type="button"
+                      onClick={confirmQuickCart}
+                      className="mt-4 w-full rounded-full bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition duration-300 hover:bg-red-600"
+                    >
+                      Añadir al carrito
+                    </button>
+                  </PermissionGate>
                 </div>
               </div>
             </motion.div>

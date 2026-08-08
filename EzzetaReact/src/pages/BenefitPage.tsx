@@ -4,7 +4,9 @@ import { useMemo, useState } from 'react';
 import { PageSection } from '../components/PageSection';
 import { SectionTitle } from '../components/SectionTitle';
 import { MembershipModal } from '../components/MembershipModal';
+import { PermissionGate } from '../components/PermissionGate';
 import { getPlanOptions, type SubscriptionPlan } from '../plans';
+import { PERMISSIONS } from '../utils/permissionCodes';
 
 type FaqItem = {
   question: string;
@@ -109,7 +111,7 @@ const faqItems: FaqItem[] = [
   },
   {
     question: '¿El descuento se aplica automáticamente?',
-    answer: 'Sí. Una vez activa tu membresía, los descuentos aplican automáticamente en tus compras mayoristas.',
+    answer: 'Sí. Una vez activa tu membresía, los descuentos aplican automáticamente en tus compras.',
   },
   {
     question: '¿Puedo cancelar la renovación automática?',
@@ -205,14 +207,16 @@ export const BenefitPage = () => {
                 ))}
               </ul>
 
-              <button
-                type="button"
-                onClick={() => handleOpenMembershipModal(plan)}
-                className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl border border-black bg-black px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-red-600 hover:bg-red-600"
-              >
-                Suscribirme
-                <ArrowRight size={16} />
-              </button>
+              <PermissionGate permission={PERMISSIONS.subscriptionCreate}>
+                <button
+                  type="button"
+                  onClick={() => handleOpenMembershipModal(plan)}
+                  className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl border border-black bg-black px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-red-600 hover:bg-red-600"
+                >
+                  Suscribirme
+                  <ArrowRight size={16} />
+                </button>
+              </PermissionGate>
             </motion.article>
           ))}
         </div>

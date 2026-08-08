@@ -16,6 +16,8 @@ const RecommendationsPage = lazy(() => import('./pages/RecommendationsPage').the
 const LoginPage = lazy(() => import('./pages/LoginPage').then((module) => ({ default: module.LoginPage })));
 const RegisterPage = lazy(() => import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage })));
 const BenefitPage = lazy(() => import('./pages/BenefitPage').then((module) => ({ default: module.BenefitPage })));
+const AdminDashboardPage = lazy(() => import('./admin/AdminDashboardPage').then((module) => ({ default: module.AdminDashboardPage })));
+
 
 function ScrollToTop() {
   const location = useLocation();
@@ -37,6 +39,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegisterPage />} />
+              <Route path="/D-Admin/*" element={<AdminDashboardPage />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/tienda" element={<StorePage />} />

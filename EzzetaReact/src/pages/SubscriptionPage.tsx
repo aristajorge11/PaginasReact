@@ -3,9 +3,11 @@ import { ArrowRight, Check, CreditCard, ShieldCheck } from 'lucide-react';
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { MembershipModal } from '../components/MembershipModal';
+import { PermissionGate } from '../components/PermissionGate';
 import { useAuth } from '../context/AuthContext';
 import { getDefaultPlanId, getPlanOptions, type SubscriptionPlan, type WholesalePlanId } from '../plans';
 import type { RegisterUserInput } from '../types/auth';
+import { PERMISSIONS } from '../utils/permissionCodes';
 
 type SubscriptionStep = 'plan' | 'register' | 'payment' | 'confirmation';
 
@@ -217,9 +219,11 @@ export const SubscriptionPage = () => {
               <button type="button" onClick={() => setStep('plan')} className="flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/20">
                 Volver
               </button>
-              <button type="submit" disabled={isSubmitting} className="flex-1 rounded-full bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-red-800">
-                {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta y continuar'}
-              </button>
+              <PermissionGate permission={PERMISSIONS.subscriptionCreate}>
+                <button type="submit" disabled={isSubmitting} className="flex-1 rounded-full bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-red-800">
+                  {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta y continuar'}
+                </button>
+              </PermissionGate>
             </div>
           </form>
         </motion.div>
@@ -359,9 +363,11 @@ export const SubscriptionPage = () => {
               <button type="button" onClick={() => (isAuthenticated ? setStep('plan') : setStep('register'))} className="flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/20">
                 Volver
               </button>
-              <button type="submit" disabled={isSubmitting} className="flex-1 rounded-full bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-red-800">
-                {isSubmitting ? 'Procesando...' : 'Confirmar suscripción'}
-              </button>
+              <PermissionGate permission={PERMISSIONS.subscriptionUpdate}>
+                <button type="submit" disabled={isSubmitting} className="flex-1 rounded-full bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-red-800">
+                  {isSubmitting ? 'Procesando...' : 'Confirmar suscripción'}
+                </button>
+              </PermissionGate>
             </div>
           </form>
         </motion.div>
@@ -426,9 +432,11 @@ export const SubscriptionPage = () => {
           <Link to="/" className="flex-1 rounded-full bg-white px-4 py-3 text-center text-sm font-semibold text-black transition hover:bg-white">
             Volver al inicio
           </Link>
-          <button type="button" onClick={() => { setStep('plan'); setIsModalOpen(true); }} className="flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
-            Elegir otro plan
-          </button>
+          <PermissionGate permission={PERMISSIONS.subscriptionUpdate}>
+            <button type="button" onClick={() => { setStep('plan'); setIsModalOpen(true); }} className="flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
+              Elegir otro plan
+            </button>
+          </PermissionGate>
         </div>
       </motion.div>
     );
@@ -480,9 +488,11 @@ export const SubscriptionPage = () => {
             <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm font-medium text-white">Beneficios incluidos</p>
-                <button type="button" onClick={() => setIsModalOpen(true)} className="text-sm font-medium text-red-300 transition hover:text-red-200">
-                  Cambiar plan
-                </button>
+                <PermissionGate permission={PERMISSIONS.subscriptionUpdate}>
+                  <button type="button" onClick={() => setIsModalOpen(true)} className="text-sm font-medium text-red-300 transition hover:text-red-200">
+                    Cambiar plan
+                  </button>
+                </PermissionGate>
               </div>
               <ul className="mt-3 space-y-2 text-sm text-white/70">
                 {selectedPlan.beneficios.map((benefit) => (
@@ -499,9 +509,11 @@ export const SubscriptionPage = () => {
               <p className="mt-2 text-sm text-white/70">Tu membresía puede renovarse de forma automática según la opción seleccionada al finalizar el proceso.</p>
             </div>
 
-            <button type="button" onClick={() => setIsModalOpen(true)} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white">
-              Ver planes disponibles <ArrowRight size={16} />
-            </button>
+            <PermissionGate permission={PERMISSIONS.subscriptionCreate}>
+              <button type="button" onClick={() => setIsModalOpen(true)} className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white">
+                Ver planes disponibles <ArrowRight size={16} />
+              </button>
+            </PermissionGate>
           </div>
         </div>
       </div>

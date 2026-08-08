@@ -47,7 +47,7 @@ export const RecommendationsPage = () => {
           <li><span className="font-medium text-black">Razon social:</span> EZZETA S.A.C.</li>
           <li><span className="font-medium text-black">RUC:</span> 20601234567</li>
           <li><span className="font-medium text-black">Telefono:</span> +51 929 370 461</li>
-          <li><span className="font-medium text-black">Correo:</span> contacto@uomocattivo.com</li>
+          <li><span className="font-medium text-black">Correo:</span> contacto@ezzeta.com</li>
           <li><span className="font-medium text-black">Sitio web:</span> www.ezzeta.com</li>
         </ul>
       </article>

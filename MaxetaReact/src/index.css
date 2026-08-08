@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  font-family: 'Barlow Condensed', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #000000;
+  background-color: #ffffff;
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-gray: #2b2b2b;
+  --color-red: #dc2626;
+  --color-green: #16a34a;
+  --color-yellow: #d97706;
+  --color-border: #b6b6b6;
+  --color-surface: #f3f3f3;
+  --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.05);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background-color: #efefef;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.85), rgba(235, 235, 235, 0.85));
+  background-size: 36px 36px, 36px 36px, 100% 100%;
+  color: var(--color-black);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  transition: all 300ms ease;
+}
+
+input,
+select,
+textarea {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  color: #111111;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-red);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Teko', 'Barlow Condensed', sans-serif;
+}
+
+@layer base {
+  .rounded,
+  [class*='rounded-'] {
+    border-radius: 0 !important;
+  }
+
+  [class*='rounded-full'] {
+    border-radius: 0 !important;
+  }
+
+  .typewriter-caret {
+    display: inline-block;
+    margin-left: 0.08em;
+    opacity: var(--typewriter-caret-state, 1);
+  }
+}
+
+@layer components {
+  .panel {
+    @apply border border-black/15 bg-black/[0.02] shadow-none;
+  }
+
+  .panel-muted {
+    @apply border border-black/15 bg-black/[0.02];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-black px-5 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-red-600 hover:scale-[1.02];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center border border-black/20 bg-transparent px-5 py-3 text-sm font-semibold text-black transition duration-300 hover:border-red-600 hover:text-red-600 hover:scale-[1.02];
+  }
+}

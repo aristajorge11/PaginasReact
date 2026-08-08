@@ -4,9 +4,12 @@ import { ArrowRight, Heart, ShoppingBag, Share2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ImagePlaceholder } from '../components/ImagePlaceholder';
 import { ProductHoverImage } from '../components/ProductHoverImage';
+import { PermissionGate } from '../components/PermissionGate';
 import { useWishlist } from '../context/WishlistContext';
 import { getProducts } from '../services/contentService';
+import PriceDisplay from '../components/PriceDisplay';
 import { StorageService } from '../services/storageService';
+import { PERMISSIONS } from '../utils/permissionCodes';
 
 export const WishlistPage = () => {
   const { favorites, toggleFavorite} = useWishlist();
@@ -72,13 +75,15 @@ export const WishlistPage = () => {
         <>
           <div className="flex flex-col gap-4 rounded-[2rem] border border-black/10 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
             <h2 className="text-xl font-semibold uppercase tracking-[0.2em] text-black">Tus piezas favoritas</h2>
-            <button
-              type="button"
-              onClick={shareWishlist}
-              className="inline-flex w-full sm:w-auto justify-center items-center gap-2 rounded-full border border-black/10 bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-red-600"
-            >
-              <Share2 size={16} /> Compartir lista
-            </button>
+            <PermissionGate permission={PERMISSIONS.wishlistShare}>
+              <button
+                type="button"
+                onClick={shareWishlist}
+                className="inline-flex w-full sm:w-auto justify-center items-center gap-2 rounded-full border border-black/10 bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-red-600"
+              >
+                <Share2 size={16} /> Compartir lista
+              </button>
+            </PermissionGate>
           </div>
 
           {shareStatus ? (
@@ -105,31 +110,35 @@ export const WishlistPage = () => {
                   ) : (
                     <ImagePlaceholder label="Producto" className="h-full" />
                   )}
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      toggleFavorite(product.id);
-                    }}
-                    className={`absolute right-2 top-2 sm:right-3 sm:top-3 rounded-full border p-2 transition ${favorites.includes(product.id) ? 'border-red-600 bg-red-600 text-white' : 'border-black/10 bg-white/90 text-black hover:border-red-600 hover:text-red-600'}`}
-                  >
-                    <Heart size={16} />
-                  </button>
-                </div>
-                <div className="mt-4 flex flex-1 flex-col">
-                  <h3 className="text-lg font-semibold text-black">{product.name}</h3>
-                  <div className="mt-auto flex items-center justify-between pt-4">
-                    <p className="text-base font-semibold text-red-600">S/{product.price}</p>
+                  <PermissionGate permission={PERMISSIONS.productUpdate}>
                     <button
                       type="button"
                       onClick={(event) => {
                         event.stopPropagation();
-                        navigate(`/producto/${product.slug}`);
+                        toggleFavorite(product.id);
                       }}
-                      className="inline-flex items-center justify-center rounded-full border border-black/10 bg-black p-2 text-white transition hover:bg-red-600"
+                      className={`absolute right-2 top-2 sm:right-3 sm:top-3 rounded-full border p-2 transition ${favorites.includes(product.id) ? 'border-red-600 bg-red-600 text-white' : 'border-black/10 bg-white/90 text-black hover:border-red-600 hover:text-red-600'}`}
                     >
-                      <ShoppingBag size={16} />
+                      <Heart size={16} />
                     </button>
+                  </PermissionGate>
+                </div>
+                <div className="mt-4 flex flex-1 flex-col">
+                  <h3 className="text-lg font-semibold text-black">{product.name}</h3>
+                  <div className="mt-auto flex items-center justify-between pt-4">
+                    <PriceDisplay product={product} />
+                    <PermissionGate permission={PERMISSIONS.salesCreate}>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          navigate(`/producto/${product.slug}`);
+                        }}
+                        className="inline-flex items-center justify-center rounded-full border border-black/10 bg-black p-2 text-white transition hover:bg-red-600"
+                      >
+                        <ShoppingBag size={16} />
+                      </button>
+                    </PermissionGate>
                   </div>
                 </div>
               </motion.article>

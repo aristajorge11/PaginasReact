@@ -1,0 +1,15 @@
+export const PERMISSIONS = {
+  productCreate: 'product.create',
+  productUpdate: 'product.update',
+  productDelete: 'product.delete',
+  warehouseCreate: 'warehouse.create',
+  salesCreate: 'sales.create',
+  salesUpdate: 'sales.update',
+  salesDelete: 'sales.delete',
+  customersUpdate: 'customers.update',
+  wishlistShare: 'wishlist.share',
+  promoApply: 'sales.promo.apply',
+  subscriptionCreate: 'subscription.create',
+  subscriptionUpdate: 'subscription.update',
+  affiliateCreate: 'affiliate.create',
+} as const;

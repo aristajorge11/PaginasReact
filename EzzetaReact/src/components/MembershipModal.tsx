@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getPlanById, getPlanOptions, type SubscriptionPlan } from '../plans';
 import type { RegisterUserInput } from '../types/auth';
+import { PERMISSIONS } from '../utils/permissionCodes';
+import { PermissionGate } from './PermissionGate';
 
 type MembershipModalProps = {
   isOpen: boolean;
@@ -301,15 +303,17 @@ export const MembershipModal = ({
               <p className="text-center text-sm text-black/70 sm:text-left">
                 Tu membresía actual está activa con <span className="font-semibold text-black">{currentPlan.nombre}</span>.
               </p>
-              <motion.button
-                type="button"
-                onClick={() => setView('select')}
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-600"
-              >
-                ✨ Cambiar Plan
-              </motion.button>
+              <PermissionGate permission={PERMISSIONS.subscriptionUpdate}>
+                <motion.button
+                  type="button"
+                  onClick={() => setView('select')}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-600"
+                >
+                  ✨ Cambiar Plan
+                </motion.button>
+              </PermissionGate>
             </div>
           </motion.div>
         </motion.div>
@@ -455,15 +459,17 @@ export const MembershipModal = ({
                   </ul>
                 </div>
 
-                <motion.button
-                  type="button"
-                  onClick={handleContinueToAccount}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="mt-5 w-full rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
-                >
-                  Continuar al pago
-                </motion.button>
+                <PermissionGate permission={PERMISSIONS.subscriptionCreate}>
+                  <motion.button
+                    type="button"
+                    onClick={handleContinueToAccount}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.99 }}
+                    className="mt-5 w-full rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
+                  >
+                    Continuar al pago
+                  </motion.button>
+                </PermissionGate>
               </div>
             </motion.div>
           ) : null}
@@ -522,9 +528,11 @@ export const MembershipModal = ({
                 <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} type="button" onClick={() => setFlowStep('plan')} className="flex-1 rounded-full border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black transition hover:bg-black/5">
                   Volver
                 </motion.button>
-                <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} type="submit" className="flex-1 rounded-full bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600">
-                  Continuar
-                </motion.button>
+                <PermissionGate permission={PERMISSIONS.subscriptionCreate}>
+                  <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} type="submit" className="flex-1 rounded-full bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600">
+                    Continuar
+                  </motion.button>
+                </PermissionGate>
               </div>
             </motion.form>
           ) : null}
@@ -591,9 +599,11 @@ export const MembershipModal = ({
                 <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} type="button" onClick={() => setFlowStep('account')} className="flex-1 rounded-full border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black transition hover:bg-black/5">
                   Volver
                 </motion.button>
-                <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} type="submit" disabled={isSubmitting} className="flex-1 rounded-full bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-black/70">
-                  {isSubmitting ? 'Activando...' : 'Iniciar membresía'}
-                </motion.button>
+                <PermissionGate permission={PERMISSIONS.subscriptionCreate}>
+                  <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} type="submit" disabled={isSubmitting} className="flex-1 rounded-full bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-black/70">
+                    {isSubmitting ? 'Activando...' : 'Iniciar membresía'}
+                  </motion.button>
+                </PermissionGate>
               </div>
             </motion.form>
           ) : null}
